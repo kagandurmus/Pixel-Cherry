@@ -16,7 +16,6 @@ import {
   TrendingDown,
   Cookie,
   CloudOff,
-  Camera
 } from 'lucide-react';
 
 export default function Home() {

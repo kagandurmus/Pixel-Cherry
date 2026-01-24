@@ -106,6 +106,7 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
 
           {/* Preview Image */}
           <div className="glass-card rounded-3xl p-4">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={result.compressedUrl}
               alt="Compressed result"
@@ -214,6 +215,7 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
         onTouchEnd={handleEnd}
       >
         {/* After Image (Bottom layer) */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={afterUrl}
           alt="After compression"
@@ -225,7 +227,8 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
         <div
           className="absolute inset-0 overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
-        >
+        >   
+            {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={beforeUrl}
             alt="Before compression"
