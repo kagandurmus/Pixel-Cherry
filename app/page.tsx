@@ -15,6 +15,7 @@ export default function Home() {
     originalSize: number;
     compressedSize: number;
     facesDetected: number;
+    originalUrl?: string; // Added this
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUploader, setShowUploader] = useState(false);
@@ -29,11 +30,14 @@ export default function Home() {
 
     setIsProcessing(true);
     
+    // Create URL for original image (for comparison slider)
+    const originalUrl = URL.createObjectURL(selectedFile);
+    
     const { compressImage } = await import('@/lib/imageCompression');
     
     try {
       const compressed = await compressImage(selectedFile, platform);
-      setResult(compressed);
+      setResult({ ...compressed, originalUrl }); // Pass original URL
     } catch (error) {
       console.error('Compression failed:', error);
       alert('Compression failed. Please try again.');
@@ -195,7 +199,7 @@ export default function Home() {
                 </div>
               )}
 
-              {result && <ResultDisplay result={result} />}
+              {result && <ResultDisplay result={result} originalUrl={result.originalUrl} />}
             </div>
           </div>
         )}

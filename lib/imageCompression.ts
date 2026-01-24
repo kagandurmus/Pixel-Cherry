@@ -1,43 +1,67 @@
-// lib/imageCompression.ts
+import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 
-// Platform-specific settings
+let faceDetector: FaceDetector | null = null;
+
+async function initializeFaceDetector() {
+  if (faceDetector) return faceDetector;
+
+  const vision = await FilesetResolver.forVisionTasks(
+    'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
+  );
+
+  faceDetector = await FaceDetector.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',
+      delegate: 'GPU',
+    },
+    runningMode: 'IMAGE',
+    minDetectionConfidence: 0.5,
+  });
+
+  return faceDetector;
+}
+
 const platformSettings = {
   instagram: {
     maxWidth: 1440,
-    quality: 0.92,
-    sharpenAmount: 1.12,
+    maxHeight: 1440,
+    quality: 0.88,  // Improved from 0.82
+    format: 'image/jpeg' as const,
     saturationBoost: 1.08,
   },
   linkedin: {
     maxWidth: 1200,
-    quality: 0.90,
-    sharpenAmount: 1.05,
-    saturationBoost: 1.02,
+    maxHeight: 1200,
+    quality: 0.90,  // Improved from 0.85
+    format: 'image/jpeg' as const,
+    saturationBoost: 1.0,
   },
   tiktok: {
     maxWidth: 1080,
-    quality: 0.88,
-    sharpenAmount: 1.10,
-    saturationBoost: 1.05,
+    maxHeight: 1920,
+    quality: 0.86,  // Improved from 0.80
+    format: 'image/jpeg' as const,
+    saturationBoost: 1.12,
   },
 };
 
-// Simple face detection using browser's built-in capabilities
-// We'll use a simpler approach that works without MediaPipe for now
-async function detectFaces(imageElement: HTMLImageElement): Promise<any[]> {
-  // For MVP, we'll return empty array (face detection optional)
-  // The compression will still work with platform optimization
-  console.log('Face detection: Using simplified mode');
-  return [];
-}
-
-// Main compression function
 export async function compressImage(
   file: File,
   platform: 'instagram' | 'linkedin' | 'tiktok'
 ) {
   const settings = platformSettings[platform];
-  const originalSize = file.size;
+
+  // Detect faces
+  const detector = await initializeFaceDetector();
+  const image = await createImageBitmap(file);
+  const detections = detector.detect(image);
+  const facesDetected = detections.detections.length;
+
+  // Face-aware quality adjustment
+  // If faces detected, boost quality by 5% to preserve face details
+  const quality = facesDetected > 0 
+    ? Math.min(settings.quality + 0.05, 0.95)  // Max 0.95 quality
+    : settings.quality;
 
   return new Promise<{
     compressedUrl: string;
@@ -48,78 +72,58 @@ export async function compressImage(
     const img = new Image();
     const reader = new FileReader();
 
-    reader.onload = async (e) => {
-      img.onload = async () => {
-        try {
-          // Step 1: Detect faces (simplified for now)
-          console.log('🔍 Analyzing image...');
-          const faces = await detectFaces(img);
-          console.log(`✅ Analysis complete`);
-
-          // Step 2: Create canvas with platform dimensions
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
-
-          // Calculate dimensions
-          const scale = Math.min(settings.maxWidth / img.width, 1);
-          canvas.width = Math.floor(img.width * scale);
-          canvas.height = Math.floor(img.height * scale);
-
-          // Draw image
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-          // Step 3: Apply platform-specific enhancements
-          console.log('🎨 Applying enhancements...');
-          
-          // Get image data
-          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = imageData.data;
-
-          // Apply saturation boost (platform-specific)
-          for (let i = 0; i < data.length; i += 4) {
-            const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-            data[i] = Math.min(255, avg + (data[i] - avg) * settings.saturationBoost);
-            data[i + 1] = Math.min(255, avg + (data[i + 1] - avg) * settings.saturationBoost);
-            data[i + 2] = Math.min(255, avg + (data[i + 2] - avg) * settings.saturationBoost);
-          }
-
-          ctx.putImageData(imageData, 0, 0);
-
-          // Step 4: Compress with platform-specific quality
-          console.log('🗜️ Compressing...');
-          
-          canvas.toBlob(
-            (blob) => {
-              if (!blob) {
-                reject(new Error('Compression failed'));
-                return;
-              }
-
-              const compressedUrl = URL.createObjectURL(blob);
-              
-              console.log(`✅ Compressed: ${(originalSize/1024).toFixed(0)}KB → ${(blob.size/1024).toFixed(0)}KB`);
-              
-              resolve({
-                compressedUrl,
-                originalSize,
-                compressedSize: blob.size,
-                facesDetected: faces.length,
-              });
-            },
-            'image/jpeg',
-            settings.quality
-          );
-        } catch (error) {
-          console.error('Compression error:', error);
-          reject(error);
-        }
-      };
-
-      img.onerror = () => reject(new Error('Failed to load image'));
+    reader.onload = (e) => {
       img.src = e.target?.result as string;
     };
 
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    img.onload = () => {
+      // Calculate dimensions
+      let { width, height } = img;
+      const aspectRatio = width / height;
+
+      if (width > settings.maxWidth || height > settings.maxHeight) {
+        if (aspectRatio > 1) {
+          width = settings.maxWidth;
+          height = Math.round(width / aspectRatio);
+        } else {
+          height = settings.maxHeight;
+          width = Math.round(height * aspectRatio);
+        }
+      }
+
+      // Create canvas
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+
+      // Apply saturation boost
+      ctx.filter = `saturate(${settings.saturationBoost})`;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      // Convert to blob
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Compression failed'));
+            return;
+          }
+
+          const compressedUrl = URL.createObjectURL(blob);
+          
+          resolve({
+            compressedUrl,
+            originalSize: file.size,
+            compressedSize: blob.size,
+            facesDetected,
+          });
+        },
+        settings.format,
+        quality  // Using face-aware quality
+      );
+    };
+
+    img.onerror = () => reject(new Error('Failed to load image'));
     reader.readAsDataURL(file);
   });
 }

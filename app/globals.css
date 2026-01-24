@@ -79,4 +79,17 @@
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
+    
+  .react-image-comparison {
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .react-image-comparison img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
 }
