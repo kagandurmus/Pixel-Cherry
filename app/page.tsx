@@ -1,10 +1,23 @@
 'use client';
 
+import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from './providers';
 import ImageUploader from '@/components/ImageUploader';
 import PlatformSelector from '@/components/PlatformSelector';
 import ResultDisplay from '@/components/ResultDisplay';
+import { 
+  Target, 
+  Brain, 
+  Lock, 
+  Shield, 
+  UserX, 
+  Zap,
+  TrendingDown,
+  Cookie,
+  CloudOff,
+  Camera
+} from 'lucide-react';
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
@@ -15,7 +28,7 @@ export default function Home() {
     originalSize: number;
     compressedSize: number;
     facesDetected: number;
-    originalUrl?: string; // Added this
+    originalUrl?: string;
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showUploader, setShowUploader] = useState(false);
@@ -37,7 +50,7 @@ export default function Home() {
     
     try {
       const compressed = await compressImage(selectedFile, platform);
-      setResult({ ...compressed, originalUrl }); // Pass original URL
+      setResult({ ...compressed, originalUrl });
     } catch (error) {
       console.error('Compression failed:', error);
       alert('Compression failed. Please try again.');
@@ -47,7 +60,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300" style={{ background: theme === 'dark' ? 'linear-gradient(to bottom right, #0f0c29, #302b63, #24243e)' : 'linear-gradient(to bottom right, #f8f9fa, #e9ecef, #dee2e6)' }}>
+    <div className="min-h-screen transition-colors duration-300" style={{ background: theme === 'dark' ? 'linear-gradient(to bottom right, #1a1414, #2D5F4F, #1a1a1a)' : 'linear-gradient(to bottom right, #FFF5EE, #f0f9ff, #e8f5e9)' }}>
       {/* Floating background orbs */}
       {theme === 'dark' && (
         <>
@@ -59,15 +72,21 @@ export default function Home() {
 
       {/* Header */}
       <header className="relative z-20 container mx-auto px-4 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg">
-            ✨
-          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg">
+              <Image 
+                src="/logo.png" 
+                alt="Pixel Cherry Logo" 
+                width={48} 
+                height={48}
+                className="object-cover"
+              />
+            </div>
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-              Compressly
+              Pixel Cherry
             </h1>
-            <p className="text-xs opacity-70">AI-Powered Compression</p>
+            <p className="text-xs opacity-70">ML-Powered • Client-Side • Private</p>
           </div>
         </div>
 
@@ -86,10 +105,10 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center space-y-12 py-12">
             <div className="space-y-6">
               <h2 className="text-6xl md:text-7xl font-black leading-tight">
-                Optimize for
+                Optimize your Images
                 <br />
                 <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x">
-                  every platform
+                  for every platform
                 </span>
                 <br />
                 in one click
@@ -106,15 +125,15 @@ export default function Home() {
             {/* Feature Badges */}
             <div className="flex flex-wrap gap-3 justify-center">
               {[
-                { icon: '🎯', label: 'Platform-Specific' },
-                { icon: '🧠', label: 'ML-Powered' },
-                { icon: '🚫', label: 'No Tracking' },
-                { icon: '🔓', label: 'No Login' },
-                { icon: '☁️', label: 'No Cloud Upload' },
-                { icon: '💯', label: 'Always Free' },
+                { icon: Target, label: 'Platform-Optimized', color: 'text-purple-400' },
+                { icon: Brain, label: 'ML Face Detection', color: 'text-pink-400' },
+                { icon: Lock, label: '100% Client-Side', color: 'text-green-400' },
+                { icon: Shield, label: 'No Tracking', color: 'text-blue-400' },
+                { icon: UserX, label: 'No Login Required', color: 'text-orange-400' },
+                { icon: Zap, label: 'Always Free', color: 'text-emerald-400' },
               ].map((badge) => (
                 <span key={badge.label} className="feature-badge">
-                  <span>{badge.icon}</span>
+                  <badge.icon className={`w-4 h-4 ${badge.color}`} />
                   <span>{badge.label}</span>
                 </span>
               ))}
@@ -134,12 +153,13 @@ export default function Home() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto pt-12">
               {[
-                { value: '50-70%', label: 'File Size Reduction' },
-                { value: '95%+', label: 'Face Detection Accuracy' },
-                { value: '0', label: 'Data Sent to Servers' },
+                { value: '50-70%', label: 'File Size Reduction', Icon: TrendingDown, color: 'from-purple-500 to-pink-500' },
+                { value: '0', label: 'Tracking & Cookies', Icon: Cookie, color: 'from-green-500 to-emerald-500' },
+                { value: '0', label: 'Server Uploads', Icon: CloudOff, color: 'from-blue-500 to-cyan-500' },
               ].map((stat) => (
                 <div key={stat.label} className="space-y-2">
-                  <div className="text-4xl md:text-5xl font-black bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                  <stat.Icon className={`w-8 h-8 mx-auto text-transparent bg-gradient-to-r ${stat.color} bg-clip-text`} strokeWidth={2} />
+                  <div className={`text-4xl md:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                     {stat.value}
                   </div>
                   <div className="text-sm opacity-60">{stat.label}</div>
@@ -203,8 +223,34 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 text-center py-8 opacity-60 text-sm">
-        Built with Next.js 14 & TypeScript
+      <footer className="relative z-10 text-center py-8 opacity-60 text-sm space-y-3">
+        <p className="font-medium">Built with Next.js 14, TypeScript & MediaPipe ML</p>
+        <div className="flex items-center justify-center gap-4 flex-wrap text-xs">
+          <span className="flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5" />
+            Client-side only
+          </span>
+          <span className="opacity-40">•</span>
+          <span className="flex items-center gap-1.5">
+            <Shield className="w-3.5 h-3.5" />
+            No tracking
+          </span>
+          <span className="opacity-40">•</span>
+          <span className="flex items-center gap-1.5">
+            <UserX className="w-3.5 h-3.5" />
+            No login
+          </span>
+          <span className="opacity-40">•</span>
+          <span className="flex items-center gap-1.5">
+            <CloudOff className="w-3.5 h-3.5" />
+            No uploads
+          </span>
+          <span className="opacity-40">•</span>
+          <span className="flex items-center gap-1.5">
+            <Zap className="w-3.5 h-3.5" />
+            Always free
+          </span>
+        </div>
       </footer>
     </div>
   );

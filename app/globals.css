@@ -3,23 +3,43 @@
 @tailwind utilities;
 
 :root {
-  --bg-primary: #ffffff;
+  /* Light Mode - Elegant Cherry Theme */
+  --bg-primary: #FFF5EE;
   --bg-secondary: #f8f9fa;
   --bg-card: #ffffff;
   --text-primary: #1a1a1a;
   --text-secondary: #6b7280;
   --border-color: #e5e7eb;
   --shadow: rgba(0, 0, 0, 0.1);
+  
+  /* Cherry Theme Colors */
+  --cherry-red: #EB3349;
+  --cherry-dark: #C71585;
+  --sage-green: #2D5F4F;
+  --mint-green: #4CAF50;
+  --forest-green: #228B22;
+  --soft-red: #F45C43;
+  --rose: #FA003F;
 }
 
 [data-theme='dark'] {
-  --bg-primary: #0f0c29;
-  --bg-secondary: #1a1530;
+  /* Dark Mode - Elegant Cherry Theme */
+  --bg-primary: #1a1414;
+  --bg-secondary: #2D5F4F;
   --bg-card: #242038;
   --text-primary: #ffffff;
   --text-secondary: #d1d5db;
   --border-color: rgba(255, 255, 255, 0.1);
   --shadow: rgba(0, 0, 0, 0.5);
+  
+  /* Cherry Theme Colors - Dark */
+  --cherry-red: #ED4072;
+  --cherry-dark: #DE3163;
+  --sage-green: #4CAF50;
+  --mint-green: #6FBFA3;
+  --forest-green: #3D7A5C;
+  --soft-red: #FF6B6B;
+  --rose: #FF4D6D;
 }
 
 @layer base {
@@ -32,24 +52,37 @@
 
 @layer utilities {
   .glass-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(45, 95, 79, 0.08);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+    border: 1px solid rgba(76, 175, 80, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(235, 51, 73, 0.12);
   }
 
   [data-theme='light'] .glass-card {
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(45, 95, 79, 0.08);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg;
+    @apply bg-gradient-to-r from-emerald-600 to-rose-500 hover:from-emerald-700 hover:to-rose-600 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg;
   }
 
   .feature-badge {
     @apply glass-card px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2 hover:scale-105 transition-transform;
+  }
+
+  /* Cherry-themed gradients */
+  .bg-cherry-gradient {
+    background: linear-gradient(135deg, var(--cherry-red) 0%, var(--soft-red) 100%);
+  }
+  
+  .bg-elegant-gradient {
+    background: linear-gradient(135deg, var(--sage-green) 0%, var(--forest-green) 50%, var(--cherry-dark) 100%);
+  }
+  
+  .text-cherry-gradient {
+    @apply bg-gradient-to-r from-emerald-500 via-teal-600 to-rose-500 bg-clip-text text-transparent;
   }
 
   @keyframes gradient-x {
@@ -72,8 +105,8 @@
   }
 
   @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
-    50% { box-shadow: 0 0 40px rgba(236, 72, 153, 0.6); }
+    0%, 100% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.3); }
+    50% { box-shadow: 0 0 40px rgba(235, 51, 73, 0.5); }
   }
 
   .animate-pulse-glow {
@@ -93,3 +126,4 @@
     object-fit: contain;
   }
 }
+

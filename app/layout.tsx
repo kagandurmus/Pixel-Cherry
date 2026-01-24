@@ -6,8 +6,8 @@ import { ThemeProvider } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Compressly - AI-Powered Image Compression",
-  description: "Smart image compression optimized for Instagram, LinkedIn & TikTok",
+  title: 'Pixel Cherry - Platform-Optimized Image Compression',
+  description: 'ML-powered compression for Instagram, LinkedIn & TikTok. 100% client-side, no tracking, always free.',
 };
 
 export default function RootLayout({
