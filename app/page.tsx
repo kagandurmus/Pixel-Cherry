@@ -86,23 +86,20 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center space-y-12 py-12">
             <div className="space-y-6">
               <h2 className="text-6xl md:text-7xl font-black leading-tight">
-                Compress{' '}
+                Optimize for
+                <br />
                 <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x">
-                  smarter
+                  every platform
                 </span>
-                ,<br />
-                not harder
+                <br />
+                in one click
               </h2>
               
               <p className="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto leading-relaxed">
-                AI-powered face-aware compression optimized for{' '}
+                Machine learning-powered compression optimized for{' '}
                 <span className="font-bold text-purple-500">Instagram</span>,{' '}
                 <span className="font-bold text-blue-500">LinkedIn</span> &{' '}
                 <span className="font-bold text-pink-500">TikTok</span>
-              </p>
-              
-              <p className="text-lg opacity-60">
-                Your photos, your device, 100% free.
               </p>
             </div>
 
@@ -110,11 +107,11 @@ export default function Home() {
             <div className="flex flex-wrap gap-3 justify-center">
               {[
                 { icon: '🎯', label: 'Platform-Specific' },
-                { icon: '🤖', label: 'AI Face Detection' },
-                { icon: '🔒', label: 'Privacy-First' },
-                { icon: '⚡', label: 'Batch Processing' },
-                { icon: '📦', label: '50-70% Smaller' },
-                { icon: '🎁', label: 'Free Forever' },
+                { icon: '🧠', label: 'ML-Powered' },
+                { icon: '🚫', label: 'No Tracking' },
+                { icon: '🔓', label: 'No Login' },
+                { icon: '☁️', label: 'No Cloud Upload' },
+                { icon: '💯', label: 'Always Free' },
               ].map((badge) => (
                 <span key={badge.label} className="feature-badge">
                   <span>{badge.icon}</span>
