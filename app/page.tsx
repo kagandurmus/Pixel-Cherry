@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { useTheme } from './providers';
 import ImageUploader from '@/components/ImageUploader';
-import PlatformSelector from '@/components/PlatformSelector';
 import ResultDisplay from '@/components/ResultDisplay';
 import { 
   Target, 
@@ -19,7 +18,7 @@ import {
   Sparkles,
   AlertTriangle,
   TrendingUp,
-  Upload
+  ChevronDown
 } from 'lucide-react';
 
 export default function Home() {
@@ -34,7 +33,6 @@ export default function Home() {
     originalUrl?: string;
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showUploader, setShowUploader] = useState(false);
 
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
@@ -103,198 +101,169 @@ export default function Home() {
       </header>
 
       <div className="relative z-10 container mx-auto px-4 py-12">
-        {!showUploader ? (
-          // Hero Landing Page
-          <div className="max-w-4xl mx-auto text-center space-y-12 py-12">
-            <div className="space-y-6">
-              <h2 className="text-6xl md:text-7xl font-black leading-tight">
-                Optimize your Images
-                <br />
-                <span className="bg-gradient-to-r from-emerald-500 via-teal-600 to-rose-500 bg-clip-text text-transparent animate-gradient-x">
-                  for every platform
-                </span>
-                <br />
-                in one click
-              </h2>
-              
-              <p className="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto leading-relaxed">
-                Machine learning-powered compression optimized for{' '}
-                <span className="font-bold text-rose-500">Instagram</span>,{' '}
-                <span className="font-bold text-blue-500">LinkedIn</span> &{' '}
-                <span className="font-bold text-emerald-500">TikTok</span>
-              </p>
-            </div>
+        {/* Hero Title */}
+        <div className="max-w-4xl mx-auto text-center space-y-6 mb-12">
+          <h2 className="text-5xl md:text-6xl font-black leading-tight">
+            Compress Images
+            <br />
+            <span className="bg-gradient-to-r from-emerald-500 via-teal-600 to-rose-500 bg-clip-text text-transparent animate-gradient-x">
+              Without Losing Quality
+            </span>
+          </h2>
 
-            {/* PRIMARY CTA - Above the fold for quick users */}
-            <div className="glass-card rounded-3xl p-8 max-w-2xl mx-auto space-y-4">
-              <button
-                onClick={() => setShowUploader(true)}
-                className="w-full btn-primary text-xl py-6 inline-flex items-center justify-center gap-3 group"
-              >
-                <Upload className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                Upload & Compress Now
-                <Sparkles className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-              </button>
-              <div className="flex items-center justify-center gap-4 text-xs opacity-70">
-                <span className="flex items-center gap-1.5">
-                  <Zap className="w-3.5 h-3.5 text-emerald-400" />
-                  Free forever
-                </span>
-                <span className="opacity-40">•</span>
-                <span className="flex items-center gap-1.5">
-                  <Shield className="w-3.5 h-3.5 text-teal-400" />
-                  No signup
-                </span>
-                <span className="opacity-40">•</span>
-                <span className="flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-blue-400" />
-                  100% private
-                </span>
-              </div>
-            </div>
+          <p className="text-lg md:text-xl opacity-80 max-w-3xl mx-auto leading-relaxed">
+            Automatically reduce file sizes by 40-60% while keeping your images sharp and clear.
+          </p>
 
-            {/* Feature Badges */}
-            <div className="flex flex-wrap gap-3 justify-center">
-              {[
-                { icon: Target, label: 'Platform-Optimized', color: 'text-emerald-500' },
-                { icon: Brain, label: 'ML Face Detection', color: 'text-rose-500' },
-                { icon: Lock, label: '100% Client-Side', color: 'text-teal-500' },
-                { icon: Shield, label: 'No Tracking', color: 'text-green-600' },
-                { icon: UserX, label: 'No Login Required', color: 'text-red-500' },
-                { icon: Zap, label: 'Always Free', color: 'text-emerald-600' },
-              ].map((badge) => (
-                <span key={badge.label} className="feature-badge">
-                  <badge.icon className={`w-4 h-4 ${badge.color}`} />
-                  <span>{badge.label}</span>
-                </span>
-              ))}
-            </div>
-
-            {/* Educational "Why Compress?" Section */}
-            <div className="max-w-4xl mx-auto my-16 space-y-8">
-              <div className="text-center space-y-3">
-                <h3 className="text-3xl font-bold">Why compress your images?</h3>
-                <p className="text-lg opacity-80">Most people don't realize social media automatically compresses your photos—often poorly</p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="glass-card p-6 rounded-2xl space-y-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center">
-                    <AlertTriangle className="w-7 h-7 text-white" strokeWidth={2.5} />
-                  </div>
-                  <h4 className="text-xl font-bold">The Problem</h4>
-                  <p className="text-sm opacity-80 leading-relaxed">
-                    Instagram, LinkedIn & TikTok compress your photos automatically. Without optimization, you get blurry faces, poor colors, and lost details.
-                  </p>
-                </div>
-
-                <div className="glass-card p-6 rounded-2xl space-y-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
-                    <Sparkles className="w-7 h-7 text-white" strokeWidth={2.5} />
-                  </div>
-                  <h4 className="text-xl font-bold">The Solution</h4>
-                  <p className="text-sm opacity-80 leading-relaxed">
-                    Pixel Cherry uses ML to detect faces and optimize before upload. Your photos look sharp, upload faster, and reach more people.
-                  </p>
-                </div>
-
-                <div className="glass-card p-6 rounded-2xl space-y-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-7 h-7 text-white" strokeWidth={2.5} />
-                  </div>
-                  <h4 className="text-xl font-bold">The Result</h4>
-                  <p className="text-sm opacity-80 leading-relaxed">
-                    Smaller files = faster uploads = better engagement. Platform algorithms favor fast-loading content, boosting your reach by up to 30%.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Secondary CTA Button */}
-            <button
-              onClick={() => setShowUploader(true)}
-              className="btn-primary text-lg px-12 py-5 inline-flex items-center gap-2 animate-pulse-glow"
-            >
-              Start Compressing
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto pt-12">
-              {[
-                { value: '50-70%', label: 'File Size Reduction', Icon: TrendingDown, color: 'from-emerald-600 to-teal-500' },
-                { value: '0', label: 'Tracking & Cookies', Icon: Cookie, color: 'from-green-600 to-emerald-500' },
-                { value: '0', label: 'Server Uploads', Icon: CloudOff, color: 'from-rose-500 to-red-500' },
-              ].map((stat) => (
-                <div key={stat.label} className="space-y-2">
-                  <stat.Icon className={`w-8 h-8 mx-auto text-transparent bg-gradient-to-r ${stat.color} bg-clip-text`} strokeWidth={2} />
-                  <div className={`text-4xl md:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
-                    {stat.value}
-                  </div>
-                  <div className="text-sm opacity-60">{stat.label}</div>
-                </div>
-              ))}
-            </div>
+          {/* Feature Badges */}
+          <div className="flex flex-wrap gap-3 justify-center pt-4">
+            {[
+              { icon: Zap, label: 'Up to 60% Smaller', color: 'text-emerald-600' },
+              { icon: Sparkles, label: 'High Quality', color: 'text-rose-500' },
+              { icon: Lock, label: '100% Private', color: 'text-teal-500' },
+              { icon: TrendingDown, label: 'Save Storage', color: 'text-blue-500' },
+              { icon: CloudOff, label: 'Works Offline', color: 'text-green-600' },
+              { icon: UserX, label: 'No Signup', color: 'text-red-500' },
+            ].map((badge) => (
+              <span key={badge.label} className="feature-badge">
+                <badge.icon className={`w-4 h-4 ${badge.color}`} />
+                <span>{badge.label}</span>
+              </span>
+            ))}
           </div>
-        ) : (
-          // Main Compression Interface
-          <div className="space-y-8">
-            <button
-              onClick={() => setShowUploader(false)}
-              className="glass-card px-4 py-2 rounded-xl flex items-center gap-2 hover:scale-105 transition-transform"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-              Back
-            </button>
+        </div>
 
-            <div className="max-w-6xl mx-auto">
-              <PlatformSelector selected={platform} onSelect={setPlatform} />
-              
-              <div className="mt-8">
-                <ImageUploader onFileSelect={handleFileSelect} />
+        {/* Main Compression Workflow */}
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Step 1: Upload Image */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
+                1
               </div>
+              <h3 className="text-xl font-bold">Upload Your Image</h3>
+            </div>
+            <ImageUploader onFileSelect={handleFileSelect} />
+          </div>
 
-              {selectedFile && (
-                <div className="mt-8 text-center space-y-4">
-                  <div className="inline-flex items-center gap-3 glass-card px-6 py-3 rounded-full">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                    <span className="text-sm font-medium">
-                      {selectedFile.name} • {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+          {/* Step 2: Compress (shows when file selected) */}
+          {selectedFile && (
+            <div className="animate-in fade-in duration-500">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
+                  2
+                </div>
+                <h3 className="text-xl font-bold">Compress & Download</h3>
+              </div>
+              
+              <div className="glass-card rounded-3xl p-6 space-y-4">
+                <div className="flex items-center justify-center gap-3 px-6 py-3 rounded-full bg-emerald-500/10">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                  <span className="text-sm font-medium">
+                    {selectedFile.name} • {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                  </span>
+                </div>
+
+                <button
+                  onClick={handleCompress}
+                  disabled={isProcessing}
+                  className="w-full btn-primary text-xl py-6 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                >
+                  {isProcessing ? (
+                    <span className="flex items-center justify-center gap-3">
+                      <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Compressing...
                     </span>
-                  </div>
+                  ) : (
+                    <span className="flex items-center justify-center gap-3">
+                      <Sparkles className="w-6 h-6" />
+                      Compress Image (High Quality)
+                      <Sparkles className="w-6 h-6" />
+                    </span>
+                  )}
+                </button>
 
-                  <button
-                    onClick={handleCompress}
-                    disabled={isProcessing}
-                    className="btn-primary text-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
-                  >
-                    {isProcessing ? (
-                      <span className="flex items-center gap-3">
-                        <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                        </svg>
-                        Processing...
-                      </span>
-                    ) : (
-                      `✨ Compress for ${platform.charAt(0).toUpperCase() + platform.slice(1)}`
-                    )}
-                  </button>
+                {/* Quality guarantee badge */}
+                <div className="text-center text-xs opacity-70 flex items-center justify-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-400" />
+                  <span>Automatic high-quality compression • Up to 60% smaller</span>
                 </div>
-              )}
+              </div>
+            </div>
+          )}
 
-              {result && <ResultDisplay result={result} originalUrl={result.originalUrl} />}
+          {/* Results */}
+          {result && <ResultDisplay result={result} originalUrl={result.originalUrl} />}
+        </div>
+
+
+        {/* Educational Content Below */}
+        <div className="max-w-4xl mx-auto mt-24 space-y-16">
+
+          {/* Educational Section */}
+          <div className="space-y-8">
+            <div className="text-center space-y-3">
+              <h3 className="text-3xl font-bold">Why compress your images?</h3>
+              <p className="text-lg opacity-80">Make your photos easier to share and store—without sacrificing quality</p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="glass-card p-6 rounded-2xl space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                  <Zap className="w-7 h-7 text-white" strokeWidth={2.5} />
+                </div>
+                <h4 className="text-xl font-bold">Share Instantly</h4>
+                <p className="text-sm opacity-80 leading-relaxed">
+                  Upload to email, WhatsApp, or cloud storage 3x faster. No more "file too large" errors.
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                  <TrendingDown className="w-7 h-7 text-white" strokeWidth={2.5} />
+                </div>
+                <h4 className="text-xl font-bold">Save Space</h4>
+                <p className="text-sm opacity-80 leading-relaxed">
+                  Free up 40-60% of storage on your phone or computer without deleting any photos.
+                </p>
+              </div>
+
+              <div className="glass-card p-6 rounded-2xl space-y-3">
+                <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl flex items-center justify-center">
+                  <Sparkles className="w-7 h-7 text-white" strokeWidth={2.5} />
+                </div>
+                <h4 className="text-xl font-bold">Keep Quality</h4>
+                <p className="text-sm opacity-80 leading-relaxed">
+                  Smart compression preserves sharpness and colors. Your images still look great.
+                </p>
+              </div>
             </div>
           </div>
-        )}
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto pt-12">
+            {[
+              { value: '40-60%', label: 'File Size Reduction', Icon: TrendingDown, color: 'from-emerald-600 to-teal-500' },
+              { value: '100%', label: 'Quality Preserved', Icon: Sparkles, color: 'from-rose-500 to-pink-500' },
+              { value: '0', label: 'Server Uploads', Icon: CloudOff, color: 'from-blue-500 to-indigo-500' },
+            ].map((stat) => (
+              <div key={stat.label} className="space-y-2">
+                <stat.Icon className={`w-8 h-8 mx-auto text-transparent bg-gradient-to-r ${stat.color} bg-clip-text`} strokeWidth={2} />
+                <div className={`text-4xl md:text-5xl font-black bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
+                  {stat.value}
+                </div>
+                <div className="text-sm opacity-60">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 text-center py-8 opacity-60 text-sm space-y-3">
+      <footer className="relative z-10 text-center py-8 opacity-60 text-sm space-y-3 mt-24">
         <p className="font-medium">Built with Next.js 14, TypeScript & MediaPipe ML</p>
         <div className="flex items-center justify-center gap-4 flex-wrap text-xs">
           <span className="flex items-center gap-1.5">
