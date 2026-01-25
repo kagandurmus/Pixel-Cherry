@@ -3,21 +3,25 @@
 import { useState, useRef } from 'react';
 import { Download, Share2, Link2, PartyPopper, Sparkles, BarChart3, SlidersHorizontal } from 'lucide-react';
 
+
 interface ResultDisplayProps {
   result: {
     compressedUrl: string;
     originalSize: number;
     compressedSize: number;
     facesDetected: number;
+    message?: string;
   };
   originalUrl?: string;
 }
+
 
 export default function ResultDisplay({ result, originalUrl }: ResultDisplayProps) {
   const [activeTab, setActiveTab] = useState<'comparison' | 'stats'>('comparison');
   const savingsPercent = ((1 - result.compressedSize / result.originalSize) * 100).toFixed(1);
   const originalMB = (result.originalSize / 1024 / 1024).toFixed(2);
   const compressedKB = (result.compressedSize / 1024).toFixed(0);
+
 
   return (
     <div className="mt-12 space-y-6 animate-in fade-in duration-500">
@@ -30,43 +34,60 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
           </h3>
           <Sparkles className="w-12 h-12 text-rose-400 animate-bounce" style={{ animationDelay: '0.1s' }} />
         </div>
-        <p className="text-lg opacity-70">
-          Reduced by <span className="font-bold text-emerald-400">{savingsPercent}%</span> while preserving quality
-        </p>
+        
+        {result.message === 'already-optimized' ? (
+        <div className="space-y-2">
+            <p className="text-xl font-bold text-emerald-400">
+                ✨ Already perfectly optimized! ✨
+            </p>
+            <p className="text-sm opacity-70">
+                Your image is already efficiently compressed. Further compression would reduce quality without meaningful file size savings.
+            </p>
+        </div>
+
+        ) : (
+          <p className="text-lg opacity-70">
+            Reduced by <span className="font-bold text-emerald-400">{savingsPercent}%</span> while preserving quality
+          </p>
+        )}
       </div>
 
-      {/* Tab switcher */}
-      <div className="flex gap-3 justify-center">
-        <button
-          onClick={() => setActiveTab('comparison')}
-          className={`px-6 py-3 rounded-2xl font-semibold transition-all ${
-            activeTab === 'comparison'
-              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg scale-105'
-              : 'glass-card hover:scale-105'
-          }`}
-        >
-          <span className="flex items-center gap-2">
-            <SlidersHorizontal className="w-5 h-5" />
-            Before/After
-          </span>
-        </button>
-        <button
-          onClick={() => setActiveTab('stats')}
-          className={`px-6 py-3 rounded-2xl font-semibold transition-all ${
-            activeTab === 'stats'
-              ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg scale-105'
-              : 'glass-card hover:scale-105'
-          }`}
-        >
-          <span className="flex items-center gap-2">
-            <BarChart3 className="w-5 h-5" />
-            Statistics
-          </span>
-        </button>
-      </div>
+
+      {/* Tab switcher - only show if not already optimized */}
+      {result.message !== 'already-optimized' && (
+        <div className="flex gap-3 justify-center">
+          <button
+            onClick={() => setActiveTab('comparison')}
+            className={`px-6 py-3 rounded-2xl font-semibold transition-all ${
+              activeTab === 'comparison'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg scale-105'
+                : 'glass-card hover:scale-105'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <SlidersHorizontal className="w-5 h-5" />
+              Before/After
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab('stats')}
+            className={`px-6 py-3 rounded-2xl font-semibold transition-all ${
+              activeTab === 'stats'
+                ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg scale-105'
+                : 'glass-card hover:scale-105'
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5" />
+              Statistics
+            </span>
+          </button>
+        </div>
+      )}
+
 
       {/* Content */}
-      {activeTab === 'comparison' && originalUrl ? (
+      {activeTab === 'comparison' && originalUrl && result.message !== 'already-optimized' ? (
         <BeforeAfterSlider
           beforeUrl={originalUrl}
           afterUrl={result.compressedUrl}
@@ -104,6 +125,7 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
             })}
           </div>
 
+
           {/* Preview Image */}
           <div className="glass-card rounded-3xl p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -116,6 +138,7 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
         </div>
       )}
 
+
       {/* Download button */}
       <div className="glass-card rounded-3xl p-6 space-y-4">
         <a
@@ -125,10 +148,11 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
         >
           <span className="flex items-center justify-center gap-3">
             <Download className="w-7 h-7" strokeWidth={2.5} />
-            Download Compressed Image
+            Download {result.message === 'already-optimized' ? 'Original' : 'Compressed'} Image
             <Sparkles className="w-7 h-7 group-hover:animate-bounce" />
           </span>
         </a>
+
 
         <div className="flex gap-3">
           <button
@@ -165,6 +189,7 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
   );
 }
 
+
 // Fixed BeforeAfterSlider Component
 interface BeforeAfterSliderProps {
   beforeUrl: string;
@@ -173,10 +198,12 @@ interface BeforeAfterSliderProps {
   afterSize: number;
 }
 
+
 function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
 
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return;
@@ -188,18 +215,22 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
     setSliderPosition(percent);
   };
 
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging) return;
     handleMove(e.clientX);
   };
+
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!isDragging) return;
     handleMove(e.touches[0].clientX);
   };
 
+
   const handleStart = () => setIsDragging(true);
   const handleEnd = () => setIsDragging(false);
+
 
   return (
     <div className="glass-card rounded-3xl p-4">
@@ -223,6 +254,7 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
           draggable={false}
         />
 
+
         {/* Before Image (Top layer with clip) */}
         <div
           className="absolute inset-0 overflow-hidden"
@@ -237,6 +269,7 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
           />
         </div>
 
+
         {/* Slider Handle */}
         <div
           className="absolute top-0 bottom-0 w-1 bg-white shadow-lg"
@@ -246,6 +279,7 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
             <SlidersHorizontal className="w-6 h-6 text-white" strokeWidth={2.5} />
           </div>
         </div>
+
 
         {/* Labels */}
         <div className="absolute top-4 left-4 glass-card px-4 py-2 rounded-xl text-sm font-bold pointer-events-none">
