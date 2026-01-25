@@ -1,6 +1,8 @@
+import Pica from 'pica';
 import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
 
 let faceDetector: FaceDetector | null = null;
+const picaInstance = Pica();
 
 async function initializeFaceDetector() {
   if (faceDetector) return faceDetector;
@@ -12,7 +14,7 @@ async function initializeFaceDetector() {
   faceDetector = await FaceDetector.createFromOptions(vision, {
     baseOptions: {
       modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite',
-      delegate: 'GPU',
+      delegate: 'CPU',
     },
     runningMode: 'IMAGE',
     minDetectionConfidence: 0.5,
@@ -21,47 +23,12 @@ async function initializeFaceDetector() {
   return faceDetector;
 }
 
-const platformSettings = {
-  instagram: {
-    maxWidth: 1440,
-    maxHeight: 1440,
-    quality: 0.88,  // Improved from 0.82
-    format: 'image/jpeg' as const,
-    saturationBoost: 1.08,
-  },
-  linkedin: {
-    maxWidth: 1200,
-    maxHeight: 1200,
-    quality: 0.90,  // Improved from 0.85
-    format: 'image/jpeg' as const,
-    saturationBoost: 1.0,
-  },
-  tiktok: {
-    maxWidth: 1080,
-    maxHeight: 1920,
-    quality: 0.86,  // Improved from 0.80
-    format: 'image/jpeg' as const,
-    saturationBoost: 1.12,
-  },
-};
-
-export async function compressImage(
-  file: File,
-  platform: 'instagram' | 'linkedin' | 'tiktok'
-) {
-  const settings = platformSettings[platform];
-
+export async function compressImage(file: File) {
   // Detect faces
   const detector = await initializeFaceDetector();
   const image = await createImageBitmap(file);
   const detections = detector.detect(image);
   const facesDetected = detections.detections.length;
-
-  // Face-aware quality adjustment
-  // If faces detected, boost quality by 5% to preserve face details
-  const quality = facesDetected > 0 
-    ? Math.min(settings.quality + 0.05, 0.95)  // Max 0.95 quality
-    : settings.quality;
 
   return new Promise<{
     compressedUrl: string;
@@ -76,51 +43,107 @@ export async function compressImage(
       img.src = e.target?.result as string;
     };
 
-    img.onload = () => {
-      // Calculate dimensions
-      let { width, height } = img;
-      const aspectRatio = width / height;
+    img.onload = async () => {
+      try {
+        const originalWidth = img.naturalWidth;
+        const originalHeight = img.naturalHeight;
+        
+        console.log('Original dimensions:', originalWidth, 'x', originalHeight);
+        console.log('Original file size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+        console.log('Faces detected:', facesDetected);
 
-      if (width > settings.maxWidth || height > settings.maxHeight) {
-        if (aspectRatio > 1) {
-          width = settings.maxWidth;
-          height = Math.round(width / aspectRatio);
-        } else {
-          height = settings.maxHeight;
-          width = Math.round(height * aspectRatio);
-        }
-      }
-
-      // Create canvas
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d')!;
-
-      // Apply saturation boost
-      ctx.filter = `saturate(${settings.saturationBoost})`;
-      ctx.drawImage(img, 0, 0, width, height);
-
-      // Convert to blob
-      canvas.toBlob(
-        (blob) => {
-          if (!blob) {
-            reject(new Error('Compression failed'));
-            return;
+        // MUCH more conservative resizing - only if REALLY large
+        const MAX_DIMENSION = 3840; // 4K
+        let targetWidth = originalWidth;
+        let targetHeight = originalHeight;
+        
+        // Only resize if one dimension is > 3840px
+        if (originalWidth > MAX_DIMENSION || originalHeight > MAX_DIMENSION) {
+          const aspectRatio = originalWidth / originalHeight;
+          
+          if (originalWidth > originalHeight) {
+            targetWidth = MAX_DIMENSION;
+            targetHeight = Math.round(MAX_DIMENSION / aspectRatio);
+          } else {
+            targetHeight = MAX_DIMENSION;
+            targetWidth = Math.round(MAX_DIMENSION * aspectRatio);
           }
+          
+          console.log('Resizing to:', targetWidth, 'x', targetHeight);
+        } else {
+          console.log('No resize needed - keeping original dimensions');
+        }
 
-          const compressedUrl = URL.createObjectURL(blob);
+        // Source canvas
+        const sourceCanvas = document.createElement('canvas');
+        sourceCanvas.width = originalWidth;
+        sourceCanvas.height = originalHeight;
+        const sourceCtx = sourceCanvas.getContext('2d')!;
+        sourceCtx.drawImage(img, 0, 0);
+
+        let finalCanvas = sourceCanvas;
+
+        // Only resize if dimensions changed
+        if (targetWidth !== originalWidth || targetHeight !== originalHeight) {
+          const destCanvas = document.createElement('canvas');
+          destCanvas.width = targetWidth;
+          destCanvas.height = targetHeight;
+
+          await picaInstance.resize(sourceCanvas, destCanvas, {
+            quality: 3,
+            alpha: true,
+            unsharpAmount: 40, // Very light sharpening
+            unsharpRadius: 0.5,
+            unsharpThreshold: 2,
+          });
+
+          finalCanvas = destCanvas;
+        }
+
+        // High quality JPEG compression
+        // Start with 0.92 quality, boost to 0.95 if faces detected
+        let quality = facesDetected > 0 ? 0.95 : 0.92;
+        
+        console.log('Using JPEG quality:', quality);
+
+        const blob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', quality);
+        
+        const reductionPercent = ((file.size - blob.size) / file.size) * 100;
+        console.log('Compressed size:', (blob.size / 1024).toFixed(0), 'KB');
+        console.log('Reduction:', reductionPercent.toFixed(1), '%');
+
+        // Safety valve: if reduction > 70%, retry with max quality
+        if (reductionPercent > 70) {
+          console.warn('Reduction too high! Retrying with quality 0.98');
+          const betterBlob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', 0.98);
+          
+          const betterReduction = ((file.size - betterBlob.size) / file.size) * 100;
+          console.log('New compressed size:', (betterBlob.size / 1024).toFixed(0), 'KB');
+          console.log('New reduction:', betterReduction.toFixed(1), '%');
+          
+          const compressedUrl = URL.createObjectURL(betterBlob);
           
           resolve({
             compressedUrl,
             originalSize: file.size,
-            compressedSize: blob.size,
+            compressedSize: betterBlob.size,
             facesDetected,
           });
-        },
-        settings.format,
-        quality  // Using face-aware quality
-      );
+          return;
+        }
+
+        const compressedUrl = URL.createObjectURL(blob);
+
+        resolve({
+          compressedUrl,
+          originalSize: file.size,
+          compressedSize: blob.size,
+          facesDetected,
+        });
+      } catch (error) {
+        console.error('Compression error:', error);
+        reject(error);
+      }
     };
 
     img.onerror = () => reject(new Error('Failed to load image'));

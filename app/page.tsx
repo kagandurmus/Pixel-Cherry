@@ -50,7 +50,7 @@ export default function Home() {
     const { compressImage } = await import('@/lib/imageCompression');
     
     try {
-      const compressed = await compressImage(selectedFile, platform);
+      const compressed = await compressImage(selectedFile);
       setResult({ ...compressed, originalUrl });
     } catch (error) {
       console.error('Compression failed:', error);
@@ -112,7 +112,7 @@ export default function Home() {
           </h2>
 
           <p className="text-lg md:text-xl opacity-80 max-w-3xl mx-auto leading-relaxed">
-            Automatically reduce file sizes by 40-60% while keeping your images sharp and clear.
+            Smart compression that prioritizes quality.
           </p>
 
           {/* Feature Badges */}
