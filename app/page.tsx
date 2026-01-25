@@ -18,7 +18,8 @@ import {
   CloudOff,
   Sparkles,
   AlertTriangle,
-  TrendingUp
+  TrendingUp,
+  Upload
 } from 'lucide-react';
 
 export default function Home() {
@@ -124,6 +125,34 @@ export default function Home() {
               </p>
             </div>
 
+            {/* PRIMARY CTA - Above the fold for quick users */}
+            <div className="glass-card rounded-3xl p-8 max-w-2xl mx-auto space-y-4">
+              <button
+                onClick={() => setShowUploader(true)}
+                className="w-full btn-primary text-xl py-6 inline-flex items-center justify-center gap-3 group"
+              >
+                <Upload className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                Upload & Compress Now
+                <Sparkles className="w-6 h-6 group-hover:rotate-12 transition-transform" />
+              </button>
+              <div className="flex items-center justify-center gap-4 text-xs opacity-70">
+                <span className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                  Free forever
+                </span>
+                <span className="opacity-40">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-teal-400" />
+                  No signup
+                </span>
+                <span className="opacity-40">•</span>
+                <span className="flex items-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5 text-blue-400" />
+                  100% private
+                </span>
+              </div>
+            </div>
+
             {/* Feature Badges */}
             <div className="flex flex-wrap gap-3 justify-center">
               {[
@@ -181,7 +210,7 @@ export default function Home() {
               </div>
             </div>
 
-            {/* CTA Button */}
+            {/* Secondary CTA Button */}
             <button
               onClick={() => setShowUploader(true)}
               className="btn-primary text-lg px-12 py-5 inline-flex items-center gap-2 animate-pulse-glow"
