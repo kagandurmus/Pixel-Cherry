@@ -16,6 +16,9 @@ import {
   TrendingDown,
   Cookie,
   CloudOff,
+  Sparkles,
+  AlertTriangle,
+  TrendingUp
 } from 'lucide-react';
 
 export default function Home() {
@@ -63,26 +66,26 @@ export default function Home() {
       {/* Floating background orbs */}
       {theme === 'dark' && (
         <>
-          <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl animate-float" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
         </>
       )}
 
       {/* Header */}
       <header className="relative z-20 container mx-auto px-4 py-6 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg">
-              <Image 
-                src="/logo.png" 
-                alt="Pixel Cherry Logo" 
-                width={48} 
-                height={48}
-                className="object-cover"
-              />
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-lg">
+            <Image 
+              src="/logo.png" 
+              alt="Pixel Cherry Logo" 
+              width={48} 
+              height={48}
+              className="object-cover"
+            />
+          </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-rose-500 bg-clip-text text-transparent">
               Pixel Cherry
             </h1>
             <p className="text-xs opacity-70">ML-Powered • Client-Side • Private</p>
@@ -106,7 +109,7 @@ export default function Home() {
               <h2 className="text-6xl md:text-7xl font-black leading-tight">
                 Optimize your Images
                 <br />
-                <span className="bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 bg-clip-text text-transparent animate-gradient-x">
+                <span className="bg-gradient-to-r from-emerald-500 via-teal-600 to-rose-500 bg-clip-text text-transparent animate-gradient-x">
                   for every platform
                 </span>
                 <br />
@@ -115,27 +118,67 @@ export default function Home() {
               
               <p className="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto leading-relaxed">
                 Machine learning-powered compression optimized for{' '}
-                <span className="font-bold text-purple-500">Instagram</span>,{' '}
+                <span className="font-bold text-rose-500">Instagram</span>,{' '}
                 <span className="font-bold text-blue-500">LinkedIn</span> &{' '}
-                <span className="font-bold text-pink-500">TikTok</span>
+                <span className="font-bold text-emerald-500">TikTok</span>
               </p>
             </div>
 
             {/* Feature Badges */}
             <div className="flex flex-wrap gap-3 justify-center">
               {[
-                { icon: Target, label: 'Platform-Optimized', color: 'text-purple-400' },
-                { icon: Brain, label: 'ML Face Detection', color: 'text-pink-400' },
-                { icon: Lock, label: '100% Client-Side', color: 'text-green-400' },
-                { icon: Shield, label: 'No Tracking', color: 'text-blue-400' },
-                { icon: UserX, label: 'No Login Required', color: 'text-orange-400' },
-                { icon: Zap, label: 'Always Free', color: 'text-emerald-400' },
+                { icon: Target, label: 'Platform-Optimized', color: 'text-emerald-500' },
+                { icon: Brain, label: 'ML Face Detection', color: 'text-rose-500' },
+                { icon: Lock, label: '100% Client-Side', color: 'text-teal-500' },
+                { icon: Shield, label: 'No Tracking', color: 'text-green-600' },
+                { icon: UserX, label: 'No Login Required', color: 'text-red-500' },
+                { icon: Zap, label: 'Always Free', color: 'text-emerald-600' },
               ].map((badge) => (
                 <span key={badge.label} className="feature-badge">
                   <badge.icon className={`w-4 h-4 ${badge.color}`} />
                   <span>{badge.label}</span>
                 </span>
               ))}
+            </div>
+
+            {/* Educational "Why Compress?" Section */}
+            <div className="max-w-4xl mx-auto my-16 space-y-8">
+              <div className="text-center space-y-3">
+                <h3 className="text-3xl font-bold">Why compress your images?</h3>
+                <p className="text-lg opacity-80">Most people don't realize social media automatically compresses your photos—often poorly</p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="glass-card p-6 rounded-2xl space-y-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-rose-500 to-red-600 rounded-xl flex items-center justify-center">
+                    <AlertTriangle className="w-7 h-7 text-white" strokeWidth={2.5} />
+                  </div>
+                  <h4 className="text-xl font-bold">The Problem</h4>
+                  <p className="text-sm opacity-80 leading-relaxed">
+                    Instagram, LinkedIn & TikTok compress your photos automatically. Without optimization, you get blurry faces, poor colors, and lost details.
+                  </p>
+                </div>
+
+                <div className="glass-card p-6 rounded-2xl space-y-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-7 h-7 text-white" strokeWidth={2.5} />
+                  </div>
+                  <h4 className="text-xl font-bold">The Solution</h4>
+                  <p className="text-sm opacity-80 leading-relaxed">
+                    Pixel Cherry uses ML to detect faces and optimize before upload. Your photos look sharp, upload faster, and reach more people.
+                  </p>
+                </div>
+
+                <div className="glass-card p-6 rounded-2xl space-y-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="w-7 h-7 text-white" strokeWidth={2.5} />
+                  </div>
+                  <h4 className="text-xl font-bold">The Result</h4>
+                  <p className="text-sm opacity-80 leading-relaxed">
+                    Smaller files = faster uploads = better engagement. Platform algorithms favor fast-loading content, boosting your reach by up to 30%.
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* CTA Button */}
@@ -152,9 +195,9 @@ export default function Home() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto pt-12">
               {[
-                { value: '50-70%', label: 'File Size Reduction', Icon: TrendingDown, color: 'from-purple-500 to-pink-500' },
-                { value: '0', label: 'Tracking & Cookies', Icon: Cookie, color: 'from-green-500 to-emerald-500' },
-                { value: '0', label: 'Server Uploads', Icon: CloudOff, color: 'from-blue-500 to-cyan-500' },
+                { value: '50-70%', label: 'File Size Reduction', Icon: TrendingDown, color: 'from-emerald-600 to-teal-500' },
+                { value: '0', label: 'Tracking & Cookies', Icon: Cookie, color: 'from-green-600 to-emerald-500' },
+                { value: '0', label: 'Server Uploads', Icon: CloudOff, color: 'from-rose-500 to-red-500' },
               ].map((stat) => (
                 <div key={stat.label} className="space-y-2">
                   <stat.Icon className={`w-8 h-8 mx-auto text-transparent bg-gradient-to-r ${stat.color} bg-clip-text`} strokeWidth={2} />
