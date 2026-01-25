@@ -118,11 +118,8 @@ export default function Home() {
           {/* Feature Badges */}
           <div className="flex flex-wrap gap-3 justify-center pt-4">
             {[
-              { icon: Zap, label: 'Up to 60% Smaller', color: 'text-emerald-600' },
               { icon: Sparkles, label: 'High Quality', color: 'text-rose-500' },
               { icon: Lock, label: '100% Private', color: 'text-teal-500' },
-              { icon: TrendingDown, label: 'Save Storage', color: 'text-blue-500' },
-              { icon: CloudOff, label: 'Works Offline', color: 'text-green-600' },
               { icon: UserX, label: 'No Signup', color: 'text-red-500' },
             ].map((badge) => (
               <span key={badge.label} className="feature-badge">
@@ -138,9 +135,6 @@ export default function Home() {
           {/* Step 1: Upload Image */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
-                1
-              </div>
               <h3 className="text-xl font-bold">Upload Your Image</h3>
             </div>
             <ImageUploader onFileSelect={handleFileSelect} />
@@ -150,9 +144,6 @@ export default function Home() {
           {selectedFile && (
             <div className="animate-in fade-in duration-500">
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm">
-                  2
-                </div>
                 <h3 className="text-xl font-bold">Compress & Download</h3>
               </div>
               
