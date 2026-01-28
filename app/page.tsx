@@ -6,25 +6,18 @@ import { useTheme } from './providers';
 import ImageUploader from '@/components/ImageUploader';
 import ResultDisplay from '@/components/ResultDisplay';
 import { 
-  Target, 
-  Brain, 
   Lock, 
   Shield, 
   UserX, 
   Zap,
   TrendingDown,
-  Cookie,
   CloudOff,
   Sparkles,
-  AlertTriangle,
-  TrendingUp,
-  ChevronDown
 } from 'lucide-react';
 
 export default function Home() {
   const { theme, toggleTheme } = useTheme();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [platform, setPlatform] = useState<'instagram' | 'linkedin' | 'tiktok'>('instagram');
   const [result, setResult] = useState<{
     compressedUrl: string;
     originalSize: number;
@@ -43,15 +36,21 @@ export default function Home() {
     if (!selectedFile) return;
 
     setIsProcessing(true);
-    
-    // Create URL for original image (for comparison slider)
     const originalUrl = URL.createObjectURL(selectedFile);
     
     const { compressImage } = await import('@/lib/imageCompression');
     
     try {
       const compressed = await compressImage(selectedFile);
-      setResult({ ...compressed, originalUrl });
+      
+      // TypeScript-happy Version:
+      const resultData = {
+        ...compressed,
+        originalUrl,
+        facesDetected: 0 // Für deine UI-Kompatibilität
+      } as typeof result;
+      
+      setResult(resultData);
     } catch (error) {
       console.error('Compression failed:', error);
       alert('Compression failed. Please try again.');
