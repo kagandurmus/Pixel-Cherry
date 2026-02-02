@@ -1,41 +1,6 @@
 import Pica from 'pica';
-import { FaceDetector, FilesetResolver } from '@mediapipe/tasks-vision';
-
-let faceDetector: FaceDetector | null = null;
-let visionFileset: Awaited<ReturnType<typeof FilesetResolver.forVisionTasks>> | null = null;
-let initPromise: Promise<FaceDetector> | null = null;
 
 const picaInstance = Pica();
-
-async function getVisionFileset() {
-  if (visionFileset) return visionFileset;
-  visionFileset = await FilesetResolver.forVisionTasks('/wasm/vision'); // local wasm base [web:63]
-  return visionFileset;
-}
-
-async function initializeFaceDetector(): Promise<FaceDetector> {
-  if (faceDetector) return faceDetector;
-  if (initPromise) return initPromise;
-
-  initPromise = (async () => {
-    const vision = await getVisionFileset();
-
-    // Use local model to avoid any fetch/CORS issues with gcs
-    const modelPath = '/models/blaze_face_short_range.tflite';
-
-    // NPM example uses createFromModelPath + detect(image) [web:57]
-    const detector = await FaceDetector.createFromModelPath(vision, modelPath);
-
-    faceDetector = detector;
-    return detector;
-  })();
-
-  try {
-    return await initPromise;
-  } finally {
-    initPromise = null;
-  }
-}
 
 function loadImageFromFile(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -46,11 +11,13 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
       try {
         // Ensures decoding is complete in modern browsers
         if ('decode' in img) await img.decode();
-        resolve(img);
-      } catch (e) {
+      } catch {
         // Even if decode fails, onload means it’s usable; continue
-        resolve(img);
+      } finally {
+        // Prevent object URL leaks
+        URL.revokeObjectURL(url);
       }
+      resolve(img);
     };
 
     img.onerror = () => {
@@ -68,18 +35,6 @@ export async function compressImage(file: File) {
   }
 
   const img = await loadImageFromFile(file);
-
-  // Face detection (non-fatal)
-  let facesDetected = 0;
-  try {
-    const detector = await initializeFaceDetector();
-    const detections = detector.detect(img);
-    facesDetected = detections.detections.length;
-  } catch (e) {
-    // This will finally show you the *real* error (expand it in console)
-    console.error('FaceDetector.detect failed:', e);
-    facesDetected = 0;
-  }
 
   const originalWidth = img.naturalWidth;
   const originalHeight = img.naturalHeight;
@@ -124,8 +79,9 @@ export async function compressImage(file: File) {
     finalCanvas = destCanvas;
   }
 
-  const quality = facesDetected > 0 ? 0.95 : 0.92;
-  const blob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', quality); // pica usage [web:151]
+  // Fixed quality (no face detection). Note: JPEG/WebP quality range is 0..1. [web:31]
+  const quality = 0.92;
+  const blob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', quality); // [web:10]
 
   if (blob.size >= file.size * 0.95) {
     const originalUrl = URL.createObjectURL(file);
@@ -133,14 +89,13 @@ export async function compressImage(file: File) {
       compressedUrl: originalUrl,
       originalSize: file.size,
       compressedSize: file.size,
-      facesDetected,
       message: 'already-optimized' as const,
     };
   }
 
   const reductionPercent = ((file.size - blob.size) / file.size) * 100;
   if (reductionPercent > 70) {
-    const betterBlob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', 0.98);
+    const betterBlob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', 0.98); // [web:10]
 
     if (betterBlob.size >= file.size * 0.95) {
       const originalUrl = URL.createObjectURL(file);
@@ -148,7 +103,6 @@ export async function compressImage(file: File) {
         compressedUrl: originalUrl,
         originalSize: file.size,
         compressedSize: file.size,
-        facesDetected,
         message: 'already-optimized' as const,
       };
     }
@@ -157,7 +111,6 @@ export async function compressImage(file: File) {
       compressedUrl: URL.createObjectURL(betterBlob),
       originalSize: file.size,
       compressedSize: betterBlob.size,
-      facesDetected,
     };
   }
 
@@ -165,6 +118,5 @@ export async function compressImage(file: File) {
     compressedUrl: URL.createObjectURL(blob),
     originalSize: file.size,
     compressedSize: blob.size,
-    facesDetected,
   };
 }
