@@ -21,7 +21,6 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
   const compressedKB = (result.compressedSize / 1024).toFixed(0);
   const compressedMB = (result.compressedSize / 1024 / 1024).toFixed(2);
 
-  // HEIC Converted Display
   if (result.message === 'heic-converted') {
     return (
       <div className="mt-12 space-y-6 animate-in fade-in duration-500">
@@ -297,7 +296,6 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
   );
 }
 
-// BeforeAfterSlider Component (unchanged)
 interface BeforeAfterSliderProps {
   beforeUrl: string;
   afterUrl: string;
