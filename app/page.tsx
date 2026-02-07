@@ -218,6 +218,7 @@ export default function Home() {
                 </p>
               </div>
 
+
               <div className="glass-card p-6 rounded-2xl space-y-3">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
                   <TrendingDown className="w-7 h-7 text-white" strokeWidth={2.5} />
