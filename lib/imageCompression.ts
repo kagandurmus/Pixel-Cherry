@@ -1,5 +1,4 @@
 import Pica from 'pica';
-import heic2any from 'heic2any';
 
 const picaInstance = Pica();
 
@@ -10,12 +9,10 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
 
     img.onload = async () => {
       try {
-        // Ensures decoding is complete in modern browsers
         if ('decode' in img) await img.decode();
       } catch {
-        // Even if decode fails, onload means it's usable; continue
+        // Continue even if decode fails
       } finally {
-        // Prevent object URL leaks
         URL.revokeObjectURL(url);
       }
       resolve(img);
@@ -32,13 +29,16 @@ function loadImageFromFile(file: File): Promise<HTMLImageElement> {
 
 async function convertHeicToPng(file: File): Promise<File> {
   try {
-    const convertedBlob = await heic2any({
+    // Dynamic import for Turbopack compatibility
+    const { heicTo } = await import('heic-to');
+    
+    const convertedBlob = await heicTo({
       blob: file,
-      toType: 'image/png', // Lossless conversion
+      type: 'image/png', // Lossless conversion
+      quality: 1
     });
 
-    const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
-    return new File([blob], file.name.replace(/\.heic$/i, '.png'), {
+    return new File([convertedBlob], file.name.replace(/\.heic$/i, '.png'), {
       type: 'image/png',
     });
   } catch (error) {
@@ -52,13 +52,14 @@ export async function compressImage(file: File) {
     throw new Error('compressImage must run in the browser');
   }
 
+  // Store original file info
+  const isHeic = file.type === 'image/heic' || 
+                 file.type === 'image/heif' || 
+                 file.name.toLowerCase().endsWith('.heic');
+
   // Convert HEIC to PNG first if needed (lossless step)
   let processedFile = file;
-  if (
-    file.type === 'image/heic' || 
-    file.type === 'image/heif' || 
-    file.name.toLowerCase().endsWith('.heic')
-  ) {
+  if (isHeic) {
     processedFile = await convertHeicToPng(file);
   }
 
@@ -107,11 +108,28 @@ export async function compressImage(file: File) {
     finalCanvas = destCanvas;
   }
 
-  // High quality JPEG compression (single lossy step for HEIC)
-  const quality = 0.92;
-  const blob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', quality);
+  // For HEIC files, start with lower quality and iterate until smaller
+  let quality = isHeic ? 0.88 : 0.92;
+  let blob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', quality);
 
-  // Use original file size for comparison (HEIC original, not PNG intermediate)
+  // For HEIC: Reduce quality until output is smaller than input
+  if (isHeic) {
+    let attempts = 0;
+    while (blob.size >= file.size && quality > 0.70 && attempts < 5) {
+      quality -= 0.04;
+      blob = await picaInstance.toBlob(finalCanvas, 'image/jpeg', quality);
+      attempts++;
+    }
+
+    return {
+      compressedUrl: URL.createObjectURL(blob),
+      originalSize: file.size,
+      compressedSize: blob.size,
+      message: 'heic-converted' as const,
+    };
+  }
+
+  // For other formats, check if compression is beneficial
   if (blob.size >= file.size * 0.95) {
     const originalUrl = URL.createObjectURL(file);
     return {

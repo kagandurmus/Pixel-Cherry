@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Download, Share2, Link2, PartyPopper, Sparkles, BarChart3, SlidersHorizontal } from 'lucide-react';
-
+import { Download, Share2, Link2, PartyPopper, Sparkles, BarChart3, SlidersHorizontal, RefreshCw } from 'lucide-react';
 
 interface ResultDisplayProps {
   result: {
@@ -10,19 +9,134 @@ interface ResultDisplayProps {
     originalSize: number;
     compressedSize: number;
     facesDetected: number;
-    message?: string;
+    message?: 'already-optimized' | 'heic-converted';
   };
   originalUrl?: string;
 }
-
 
 export default function ResultDisplay({ result, originalUrl }: ResultDisplayProps) {
   const [activeTab, setActiveTab] = useState<'comparison' | 'stats'>('comparison');
   const savingsPercent = ((1 - result.compressedSize / result.originalSize) * 100).toFixed(1);
   const originalMB = (result.originalSize / 1024 / 1024).toFixed(2);
   const compressedKB = (result.compressedSize / 1024).toFixed(0);
+  const compressedMB = (result.compressedSize / 1024 / 1024).toFixed(2);
 
+  // HEIC Converted Display
+  if (result.message === 'heic-converted') {
+    return (
+      <div className="mt-12 space-y-6 animate-in fade-in duration-500">
+        {/* HEIC Conversion Success */}
+        <div className="glass-card rounded-3xl p-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <RefreshCw className="w-12 h-12 text-teal-400 animate-spin" style={{ animationDuration: '3s' }} />
+            <h3 className="text-4xl font-black bg-gradient-to-r from-teal-500 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
+              HEIC Converted to JPEG!
+            </h3>
+            <Sparkles className="w-12 h-12 text-blue-400 animate-bounce" />
+          </div>
+          
+          <p className="text-lg opacity-80 max-w-2xl mx-auto">
+            Your HEIC file has been converted to a universal JPEG format for maximum compatibility across all devices and platforms.
+          </p>
+        </div>
 
+        {/* Format Comparison */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-rose-500/20 to-red-500/20 opacity-50" />
+            <div className="relative z-10">
+              <div className="text-sm font-semibold opacity-60 uppercase tracking-wide mb-2">HEIC Original</div>
+              <div className="text-5xl font-black text-rose-400 mb-2">{originalMB}MB</div>
+              <div className="text-xs opacity-70">iPhone format • Limited compatibility</div>
+            </div>
+          </div>
+
+          <div className="glass-card rounded-2xl p-6 text-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-teal-500/20 to-blue-500/20 opacity-50" />
+            <div className="relative z-10">
+              <div className="text-sm font-semibold opacity-60 uppercase tracking-wide mb-2">JPEG Output</div>
+              <div className="text-5xl font-black text-teal-400 mb-2">{compressedMB}MB</div>
+              <div className="text-xs opacity-70">Universal format • Works everywhere</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Benefits Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: 'Email', icon: '📧', desc: 'No attachment issues' },
+            { label: 'Social Media', icon: '📱', desc: 'Instagram, Facebook, X' },
+            { label: 'Web', icon: '🌐', desc: 'All browsers' },
+            { label: 'Devices', icon: '💻', desc: 'Windows, Android, Mac' },
+          ].map((benefit, i) => (
+            <div key={i} className="glass-card rounded-2xl p-4 text-center transform hover:scale-105 transition-all">
+              <div className="text-3xl mb-2">{benefit.icon}</div>
+              <div className="font-bold text-sm mb-1">{benefit.label}</div>
+              <div className="text-xs opacity-60">{benefit.desc}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Preview Image */}
+        <div className="glass-card rounded-3xl p-4">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={result.compressedUrl}
+            alt="Converted JPEG result"
+            className="w-full rounded-2xl shadow-2xl max-h-[600px] object-contain mx-auto"
+          />
+        </div>
+
+        {/* Download button */}
+        <div className="glass-card rounded-3xl p-6 space-y-4">
+          <a
+            href={result.compressedUrl}
+            download={`pixel-cherry-converted-${Date.now()}.jpg`}
+            className="group block w-full bg-gradient-to-r from-teal-500 via-blue-500 to-teal-500 hover:from-teal-600 hover:via-blue-600 hover:to-teal-600 text-white text-center px-10 py-6 rounded-2xl font-black text-xl shadow-2xl transform hover:scale-105 transition-all duration-300 bg-[length:200%_auto] hover:bg-right"
+          >
+            <span className="flex items-center justify-center gap-3">
+              <Download className="w-7 h-7" strokeWidth={2.5} />
+              Download JPEG Image
+              <Sparkles className="w-7 h-7 group-hover:animate-bounce" />
+            </span>
+          </a>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(result.compressedUrl);
+                alert('Link copied to clipboard!');
+              }}
+              className="flex-1 glass-card hover:bg-white/20 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Link2 className="w-5 h-5" />
+              Copy Link
+            </button>
+            <button
+              onClick={() => {
+                const shareData = {
+                  title: 'Pixel Cherry - HEIC Converted',
+                  text: 'I converted my HEIC to JPEG with Pixel Cherry!',
+                  url: result.compressedUrl,
+                };
+                if (navigator.share) {
+                  navigator.share(shareData);
+                } else {
+                  alert('Sharing not supported on this device');
+                }
+              }}
+              className="flex-1 glass-card hover:bg-white/20 px-6 py-3 rounded-xl font-semibold transition-all hover:scale-105 flex items-center justify-center gap-2"
+            >
+              <Share2 className="w-5 h-5" />
+              Share
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Regular compression display (existing code)
   return (
     <div className="mt-12 space-y-6 animate-in fade-in duration-500">
       {/* Success header */}
@@ -36,22 +150,20 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
         </div>
         
         {result.message === 'already-optimized' ? (
-        <div className="space-y-2">
+          <div className="space-y-2">
             <p className="text-xl font-bold text-emerald-400">
-                ✨ Already perfectly optimized! ✨
+              ✨ Already perfectly optimized! ✨
             </p>
             <p className="text-sm opacity-70">
-                Your image is already efficiently compressed. Further compression would reduce quality without meaningful file size savings.
+              Your image is already efficiently compressed. Further compression would reduce quality without meaningful file size savings.
             </p>
-        </div>
-
+          </div>
         ) : (
           <p className="text-lg opacity-70">
             Reduced by <span className="font-bold text-emerald-400">{savingsPercent}%</span> while preserving quality
           </p>
         )}
       </div>
-
 
       {/* Tab switcher - only show if not already optimized */}
       {result.message !== 'already-optimized' && (
@@ -84,7 +196,6 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
           </button>
         </div>
       )}
-
 
       {/* Content */}
       {activeTab === 'comparison' && originalUrl && result.message !== 'already-optimized' ? (
@@ -125,7 +236,6 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
             })}
           </div>
 
-
           {/* Preview Image */}
           <div className="glass-card rounded-3xl p-4">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -137,7 +247,6 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
           </div>
         </div>
       )}
-
 
       {/* Download button */}
       <div className="glass-card rounded-3xl p-6 space-y-4">
@@ -152,7 +261,6 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
             <Sparkles className="w-7 h-7 group-hover:animate-bounce" />
           </span>
         </a>
-
 
         <div className="flex gap-3">
           <button
@@ -189,8 +297,7 @@ export default function ResultDisplay({ result, originalUrl }: ResultDisplayProp
   );
 }
 
-
-// Fixed BeforeAfterSlider Component
+// BeforeAfterSlider Component (unchanged)
 interface BeforeAfterSliderProps {
   beforeUrl: string;
   afterUrl: string;
@@ -198,12 +305,10 @@ interface BeforeAfterSliderProps {
   afterSize: number;
 }
 
-
 function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: BeforeAfterSliderProps) {
   const [sliderPosition, setSliderPosition] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
 
   const handleMove = (clientX: number) => {
     if (!containerRef.current) return;
@@ -215,22 +320,18 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
     setSliderPosition(percent);
   };
 
-
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isDragging) return;
     handleMove(e.clientX);
   };
-
 
   const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!isDragging) return;
     handleMove(e.touches[0].clientX);
   };
 
-
   const handleStart = () => setIsDragging(true);
   const handleEnd = () => setIsDragging(false);
-
 
   return (
     <div className="glass-card rounded-3xl p-4">
@@ -254,13 +355,12 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
           draggable={false}
         />
 
-
         {/* Before Image (Top layer with clip) */}
         <div
           className="absolute inset-0 overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
         >   
-            {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={beforeUrl}
             alt="Before compression"
@@ -268,7 +368,6 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
             draggable={false}
           />
         </div>
-
 
         {/* Slider Handle */}
         <div
@@ -279,7 +378,6 @@ function BeforeAfterSlider({ beforeUrl, afterUrl, beforeSize, afterSize }: Befor
             <SlidersHorizontal className="w-6 h-6 text-white" strokeWidth={2.5} />
           </div>
         </div>
-
 
         {/* Labels */}
         <div className="absolute top-4 left-4 glass-card px-4 py-2 rounded-xl text-sm font-bold pointer-events-none">
