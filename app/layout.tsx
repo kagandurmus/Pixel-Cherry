@@ -6,8 +6,8 @@ import { ThemeProvider } from "./providers";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Pixel Cherry - Platform-Optimized Image Compression',
-  description: 'ML-powered compression for Instagram, LinkedIn & TikTok. 100% client-side, no tracking, always free.',
+  title: 'Pixel Cherry - Quality-Optimized Image Compression',
+  description: 'ML-powered compression for Social Media Photos. 100% client-side, no tracking, always free.',
 };
 
 export default function RootLayout({
@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>
           {children}

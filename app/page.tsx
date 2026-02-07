@@ -60,15 +60,16 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen transition-colors duration-300" style={{ background: theme === 'dark' ? 'linear-gradient(to bottom right, #1a1414, #2D5F4F, #1a1a1a)' : 'linear-gradient(to bottom right, #FFF5EE, #f0f9ff, #e8f5e9)' }}>
+    <div className="min-h-screen transition-colors duration-300" style={{ background: theme === 'dark' ? 'linear-gradient(to bottom right, #0a0a0a, #1a1a1a, #0f0f0f)' : 'linear-gradient(to bottom right, #FFF5EE, #f0f9ff, #e8f5e9)' }}>
       {/* Floating background orbs */}
       {theme === 'dark' && (
-        <>
-          <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl animate-float" />
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
-          <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
-        </>
-      )}
+    <>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-gray-500/10 rounded-full blur-3xl animate-float" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-rose-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+      <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gray-400/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '1.5s' }} />
+    </>
+  )}
+
 
       {/* Header */}
       <header className="relative z-20 container mx-auto px-4 py-6 flex items-center justify-between">
