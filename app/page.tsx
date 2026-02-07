@@ -38,26 +38,32 @@ export default function Home() {
     setIsProcessing(true);
     const originalUrl = URL.createObjectURL(selectedFile);
     
-    const { compressImage } = await import('@/lib/imageCompression');
+    console.log('🚀 Starting compression...', selectedFile.name, selectedFile.type);
     
     try {
-      const compressed = await compressImage(selectedFile);
+      const { compressImage } = await import('@/lib/imageCompression');
+      console.log('📦 Module loaded, calling compressImage...');
       
-      // TypeScript-happy Version:
+      const compressed = await compressImage(selectedFile);
+      console.log('✅ Compression complete:', compressed);
+      
       const resultData = {
         ...compressed,
         originalUrl,
-        facesDetected: 0 // Für deine UI-Kompatibilität
+        facesDetected: 0
       } as typeof result;
       
       setResult(resultData);
     } catch (error) {
-      console.error('Compression failed:', error);
-      alert('Compression failed. Please try again.');
+      console.error('❌ Compression failed:', error);
+      alert(`Error: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
+      console.log('🏁 Setting isProcessing to false');
       setIsProcessing(false);
     }
   };
+
+
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ background: theme === 'dark' ? 'linear-gradient(to bottom right, #0a0a0a, #1a1a1a, #0f0f0f)' : 'linear-gradient(to bottom right, #FFF5EE, #f0f9ff, #e8f5e9)' }}>
