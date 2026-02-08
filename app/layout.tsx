@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: 'Pixel Cherry - Quality-Optimized Image Compression',
-  description: 'ML-powered compression for Social Media Photos. 100% client-side, no tracking, always free.',
+  description: '100% client-side, no tracking, fast.',
 };
 
 export default function RootLayout({

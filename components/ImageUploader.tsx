@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { Upload, Image as ImageIcon, Sparkles, FileImage } from 'lucide-react';
+import { Upload, FileImage } from 'lucide-react';
 
 interface ImageUploaderProps {
   onFileSelect: (file: File) => void;
@@ -41,73 +41,51 @@ export default function ImageUploader({ onFileSelect }: ImageUploaderProps) {
       }}
       onDragLeave={() => setIsDragging(false)}
       className={`
-        relative border-2 border-dashed rounded-3xl p-16 text-center 
-        transition-all duration-300 glass-card overflow-hidden
+        relative border-2 border-dashed rounded-2xl p-6 md:p-8 text-center 
+        transition-all duration-300 glass-card
         ${isDragging 
-          ? 'border-emerald-400 bg-emerald-500/10 scale-[1.02] shadow-2xl shadow-emerald-500/20' 
-          : 'border-emerald-500/30 hover:border-emerald-400/60 hover:shadow-xl'
+          ? 'border-emerald-400 bg-emerald-500/10 scale-[1.02]' 
+          : 'border-emerald-500/30 hover:border-emerald-400/60'
         }
       `}
     >
-      {/* Animated background gradient on drag */}
-      {isDragging && (
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-teal-500/10 to-rose-500/10 animate-pulse" />
-      )}
-
-      {/* Sparkle effects on corners when dragging */}
-      {isDragging && (
-        <>
-          <Sparkles className="absolute top-4 left-4 w-6 h-6 text-emerald-400 animate-pulse" />
-          <Sparkles className="absolute top-4 right-4 w-6 h-6 text-rose-400 animate-pulse" style={{ animationDelay: '0.3s' }} />
-          <Sparkles className="absolute bottom-4 left-4 w-6 h-6 text-teal-400 animate-pulse" style={{ animationDelay: '0.6s' }} />
-          <Sparkles className="absolute bottom-4 right-4 w-6 h-6 text-emerald-400 animate-pulse" style={{ animationDelay: '0.9s' }} />
-        </>
-      )}
-
-      <div className="relative z-10">
-        {/* Main icon with gradient background */}
+      <div className="space-y-3">
         <div className={`
-          inline-flex items-center justify-center w-24 h-24 rounded-3xl mb-6
+          inline-flex items-center justify-center w-14 h-14 rounded-2xl
           bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg
-          transition-all duration-300 transform
-          ${isDragging ? 'scale-110 rotate-6 shadow-emerald-500/50' : 'hover:scale-105'}
+          transition-transform duration-300
+          ${isDragging ? 'scale-110' : 'hover:scale-105'}
         `}>
           {isDragging ? (
-            <Upload className="w-12 h-12 text-white animate-bounce" strokeWidth={2.5} />
+            <Upload className="w-7 h-7 text-white animate-bounce" strokeWidth={2} />
           ) : (
-            <ImageIcon className="w-12 h-12 text-white" strokeWidth={2.5} />
+            <FileImage className="w-7 h-7 text-white" strokeWidth={2} />
           )}
         </div>
 
-        {/* Title */}
-        <h3 className={`
-          text-2xl font-bold mb-3 transition-all duration-300
-          ${isDragging 
-            ? 'bg-gradient-to-r from-emerald-500 to-rose-500 bg-clip-text text-transparent scale-105' 
-            : ''
-          }
-        `}>
-          {isDragging ? 'Drop it right here!' : 'Drop your image here'}
-        </h3>
+        <div>
+          <h3 className="text-base md:text-lg font-semibold mb-1">
+            {isDragging ? 'Drop it here!' : 'Drop your image here'}
+          </h3>
+          <p className="text-sm opacity-60">
+            or click to browse
+          </p>
+        </div>
 
-        {/* Description */}
-        <p className="opacity-70 mb-8 text-lg">
-          or click the button below to browse
-        </p>
-
-        {/* Upload button */}
-        <label className="cursor-pointer group inline-block">
-          <span className={`
-            px-10 py-4 rounded-2xl 
-            inline-flex items-center gap-3 transition-all duration-300 
-            transform group-hover:scale-105 font-semibold text-lg
+        <label className="cursor-pointer inline-block">
+          <span className="
+            px-5 py-2.5 rounded-xl 
+            inline-flex items-center gap-2 
+            transition-all duration-200 
+            transform hover:scale-105 
+            font-medium text-sm
             bg-gradient-to-r from-emerald-600 to-teal-600 
             hover:from-emerald-700 hover:to-teal-700
-            text-white shadow-lg hover:shadow-xl hover:shadow-emerald-500/30
-            `}>
-            <FileImage className="w-6 h-6 text-white" strokeWidth={2.5} />
+            text-white shadow-md hover:shadow-lg
+          ">
+            <Upload className="w-4 h-4" strokeWidth={2} />
             Choose Image
-        </span>
+          </span>
 
           <input
             type="file"
@@ -117,28 +95,9 @@ export default function ImageUploader({ onFileSelect }: ImageUploaderProps) {
           />
         </label>
 
-        {/* Supported formats with icons */}
-        <div className="flex items-center justify-center gap-2 text-sm mt-6 opacity-60">
-          <div className="flex items-center gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>JPG</span>
-          </div>
-          <span className="opacity-40">•</span>
-          <div className="flex items-center gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-teal-400" />
-            <span>PNG</span>
-          </div>
-          <span className="opacity-40">•</span>
-          <div className="flex items-center gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-            <span>WebP</span>
-          </div>
-          <span className="opacity-40">•</span>
-          <div className="flex items-center gap-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-            <span>HEIC</span>
-          </div>
-        </div>
+        <p className="text-xs opacity-50">
+          JPG • PNG • WebP • HEIC
+        </p>
       </div>
     </div>
   );
