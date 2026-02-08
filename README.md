@@ -1,35 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍒 Pixel Cherry
 
-## Getting Started
+**Smart image compression that runs entirely in your browser. Your files never leave your device.**
 
-First, run the development server:
+[![Live Demo](https://img.shields.io/badge/demo-live-brightgreen)](https://pixel-cherry.vercel.app/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+
+[**Try it Live →**](https://pixel-cherry.vercel.app/)
+
+---
+
+## ✨ Features
+
+- 🔒 **100% Client-Side** - No uploads, your images never touch a server
+- 🎯 **Smart Compression** - Reduce file size by 40-60% while preserving quality
+- ⚡ **Instant Processing** - No waiting, no queues, no API limits
+- 🌙 **Dark Mode** - Easy on the eyes
+- 📱 **Mobile-Friendly** - Works perfectly on any device
+- 🎨 **Multiple Formats** - Supports JPG, PNG, WebP, and HEIC
+
+## 🚀 Quick Start
+
+### Try it Online
+Visit [pixel-cherry.vercel.app](https://pixel-cherry.vercel.app/) and start compressing immediately.
+
+### Run Locally
 
 ```bash
+# Clone the repository
+git clone https://github.com/kagandurmus/Pixel-Cherry.git
+cd Pixel-Cherry
+
+# Install dependencies
+npm install
+
+# Start development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+Pixel-Cherry/
+├── app/
+│   ├── page.tsx          # Main compression interface
+│   ├── layout.tsx        # App layout and metadata
+│   └── providers.tsx     # Theme provider
+├── components/
+│   ├── ImageUploader.tsx # Drag & drop upload component
+│   └── ResultDisplay.tsx # Compression results & download
+├── lib/
+│   └── imageCompression.ts # Core compression logic
+└── public/
+    └── logo.png
+
 ```
+🤝 Contributing
+Contributions are welcome! Feel free to:
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+  - Report bugs
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+  - Suggest new features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+  - Submit pull requests
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+📝 License
+MIT License - feel free to use this project however you'd like.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+👨‍💻 Author
+Kağan Durmuş
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The app is deployed on Vercel through the following link: https://pixel-cherry.vercel.app/
+If you find this useful, give it a ⭐ on GitHub!
 
