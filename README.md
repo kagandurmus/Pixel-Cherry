@@ -7,6 +7,13 @@ Compress JPG, PNG, WebP, and HEIC images directly in your browser without upload
 [![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
 
+### Upload Screen
+![Upload flow](./public/screenshots/upload-image.png)
+
+### Image quality
+![Image quality](./public/screenshots/image-quality.png)
+
+## Live Demo Link Address
 [**Live Demo →**](https://pixel-cherry.vercel.app/)
 
 ---
